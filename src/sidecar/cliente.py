@@ -66,9 +66,19 @@ def run():
 
 
         stub = vuelos_pb2_grpc.VuelosStub(channel)
-        response = stub.CrearReserva(reserva)
-    print("Greeter client received: " + response.mensaje)
-    print(f'Reserva: {response.reserva}')
+        try:
+            response = stub.CrearReserva(reserva)
+            print("Greeter client received: " + response.mensaje)
+            print(f'Reserva: {response.reserva}')
+            
+            # Consultar la reserva creada
+            query = vuelos_pb2.QueryReserva(id=response.reserva.id)
+            consulta_response = stub.ConsultarReserva(query)
+            print(f"Consulta de reserva: {consulta_response.mensaje}")
+            print(f"Reserva: {consulta_response.reserva}")
+        except grpc.RpcError as e:
+            print(f"gRPC error: {e.details()}")
+            print(f"gRPC status code: {e.code()}")
 
 
 if __name__ == '__main__':
